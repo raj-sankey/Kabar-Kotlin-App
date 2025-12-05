@@ -1,6 +1,7 @@
 package com.example.kabar.presentation.navigation.bottom_tab_navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.NavHostController
@@ -16,7 +17,7 @@ fun BottomNavGraph(
     navController: NavHostController,
     isDarkTheme: Boolean,
     onThemeToggle: () -> Unit,
-    appViewModel: AppViewModel
+    appViewModel: AppViewModel,
 ) {
 
     NavHost(
@@ -24,7 +25,7 @@ fun BottomNavGraph(
         startDestination = "home"
     ) {
 
-        composable("home") { HomeScreen(appViewModel = appViewModel) }
+        composable("home") { HomeScreen(appViewModel = appViewModel, modifier = Modifier) }
         composable("explore") { Explore(appViewModel = appViewModel) }
         composable("bookmark") { Bookmark(appViewModel = appViewModel) }
         composable("profile") {
