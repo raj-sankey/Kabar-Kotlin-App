@@ -5,12 +5,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.*
 import androidx.compose.ui.unit.dp
+import com.example.kabar.presentation.state.AppViewModel
 
 @Composable
 fun Profile(
     modifier: Modifier = Modifier,
     isDarkTheme: Boolean,
-    onThemeToggle: () -> Unit
+    onThemeToggle: () -> Unit,
+    appViewModel: AppViewModel
 ) {
     Column(
         modifier = Modifier.padding(16.dp)

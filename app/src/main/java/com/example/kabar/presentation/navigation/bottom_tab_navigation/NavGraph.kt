@@ -9,12 +9,14 @@ import com.example.kabar.presentation.screens.HomeScreen.Bookmark
 import com.example.kabar.presentation.screens.HomeScreen.Explore
 import com.example.kabar.presentation.screens.HomeScreen.HomeScreen
 import com.example.kabar.presentation.screens.Profile.Profile
+import com.example.kabar.presentation.state.AppViewModel
 
 @Composable
 fun BottomNavGraph(
     navController: NavHostController,
     isDarkTheme: Boolean,
-    onThemeToggle: () -> Unit
+    onThemeToggle: () -> Unit,
+    appViewModel: AppViewModel
 ) {
 
     NavHost(
@@ -22,13 +24,14 @@ fun BottomNavGraph(
         startDestination = "home"
     ) {
 
-        composable("home") { HomeScreen() }
-        composable("explore") { Explore() }
-        composable("bookmark") { Bookmark() }
+        composable("home") { HomeScreen(appViewModel = appViewModel) }
+        composable("explore") { Explore(appViewModel = appViewModel) }
+        composable("bookmark") { Bookmark(appViewModel = appViewModel) }
         composable("profile") {
             Profile(
                 isDarkTheme = isDarkTheme,
-                onThemeToggle = onThemeToggle
+                onThemeToggle = onThemeToggle,
+                appViewModel = appViewModel
             )
         }
 

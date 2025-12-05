@@ -7,11 +7,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.kabar.presentation.state.AppViewModel
 
 @Composable
 fun BottomTabNavigation(
     isDarkTheme: Boolean,
-    onThemeToggle: () -> Unit
+    onThemeToggle: () -> Unit,
+    appViewModel: AppViewModel
 ) {
 
     val navController = rememberNavController()
@@ -79,7 +81,8 @@ fun BottomTabNavigation(
         BottomNavGraph(
             navController = navController,
             isDarkTheme = isDarkTheme,
-            onThemeToggle = onThemeToggle
+            onThemeToggle = onThemeToggle,
+            appViewModel = appViewModel
         )
     }
 }
