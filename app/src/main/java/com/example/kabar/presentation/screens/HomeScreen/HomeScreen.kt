@@ -1,21 +1,25 @@
 package com.example.kabar.presentation.screens.HomeScreen
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -30,11 +34,15 @@ import com.example.kabar.presentation.ui.components.scrollable_tab_bar.Scrollabl
 import com.example.kabar.presentation.ui.components.topbar.Topbar
 import com.example.kabar.presentation.ui.components.trending_news.TrendingNewsItem
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomeScreen(appViewModel: AppViewModel, modifier: Modifier= Modifier) {
-    //declaring the goobal state
+fun HomeScreen(
+    appViewModel: AppViewModel,
+    modifier: Modifier = Modifier
+) {
+    // Global state
     val state by appViewModel.uiState.collectAsStateWithLifecycle()
-    var selectedTab by remember { mutableStateOf(0) }
+    var selectedTab by rememberSaveable { mutableStateOf(0) }
 
     val categories = listOf("Top News", "Sports", "Tech", "Health", "Finance", "Entertainment")
 
@@ -63,8 +71,6 @@ fun HomeScreen(appViewModel: AppViewModel, modifier: Modifier= Modifier) {
             channelName = "ESPN",
             timeAgo = "1h ago"
         ),
-
-        // ---------- Additional 10 Items ----------
         NewsCardModel(
             mainImage = R.drawable.news,
             category = "World",
@@ -147,79 +153,96 @@ fun HomeScreen(appViewModel: AppViewModel, modifier: Modifier= Modifier) {
         )
     )
 
-    Scaffold() { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)   // <— applies safe-area automatically
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .padding(16.dp)
-        ) {
-            // Display total bookmarks count
-////        Text("Bookmarks Count: ${state.bookmarks.size}")
-////
-////        // Button — when clicked, adds dummy data to global state
-////        Button (
-////            onClick = {
-////                appViewModel.onEvent(AppEvent.AddBookmark("dummy_item_${state.bookmarks.size + 1}"))
-////            }
-////        ) {
-////            Text("Add Dummy Bookmark")
-////        }
+    Scaffold(
+        contentWindowInsets = WindowInsets(0), // 👈 disables automatic safe padding
 
-            Topbar()
-            Spacer(Modifier.height(8.dp))
-            Row(
-                modifier.fillMaxWidth(), Arrangement.SpaceBetween,
-            ) {
-                Text("Trending", fontWeight = FontWeight.SemiBold,
-                    fontSize = 18.sp,)
-                Text("See all")
-            }
-
-            TrendingNewsItem(
-                mainImage = R.drawable.news,
-                category = "Europe",
-                title = "Russian warship: Moskva sinks in Black Sea",
-                channelImage = R.drawable.news,
-                channelName = "BBC News",
-                timeAgo = "4h ago"
+        topBar = {
+            Topbar(
+                modifier = Modifier
+                    .padding(top = 50.dp)   // your manual spacing
+                    .padding(horizontal = 16.dp)
             )
+        }
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
 
-            Spacer(Modifier.height(8.dp))
-            Row(
-                modifier.fillMaxWidth(), Arrangement.SpaceBetween,
-            ) {
-                Text("Latest", fontWeight = FontWeight.SemiBold,
-                    fontSize = 18.sp,)
-                Text("See all")
+            // 🔹 Trending Section (scrolls away)
+            item {
+                Spacer(Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        "Trending",
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 18.sp
+                    )
+                    Text("See all")
+                }
             }
-            Spacer(Modifier.height(8.dp))
 
-            Column {
-                ScrollableTabBar(
-                    tabs = categories,
-                    selectedIndex = selectedTab,
-                    onTabSelected = { selectedTab = it }
+            item {
+                TrendingNewsItem(
+                    mainImage = R.drawable.news,
+                    category = "Europe",
+                    title = "Russian warship: Moskva sinks in Black Sea",
+                    channelImage = R.drawable.news,
+                    channelName = "BBC News",
+                    timeAgo = "4h ago"
                 )
-
-                // TODO: Load news based on selected tab
-//                Text("Selected category: ${categories[selectedTab]}")
             }
 
-            LazyColumn {
-                items(mockNewsList) { news ->
-                    NewsCardItem(
-                        mainImage = news.mainImage,
-                        category = news.category,
-                        title = news.title,
-                        channelImage = news.channelImage,
-                        channelName = news.channelName,
-                        timeAgo = news.timeAgo
+            // 🔹 Latest + Tabs: STICKY HEADER
+            stickyHeader {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(top = 8.dp, bottom = 4.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            "Latest",
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 18.sp
+                        )
+                        Text("See all")
+                    }
+
+                    Spacer(Modifier.height(8.dp))
+
+                    ScrollableTabBar(
+                        tabs = categories,
+                        selectedIndex = selectedTab,
+                        onTabSelected = { selectedTab = it }
                     )
                 }
             }
-        }
 
+            // 🔹 News List
+            items(
+                items = mockNewsList,
+                key = { it.title }
+            ) { news ->
+                NewsCardItem(
+                    mainImage = news.mainImage,
+                    category = news.category,
+                    title = news.title,
+                    channelImage = news.channelImage,
+                    channelName = news.channelName,
+                    timeAgo = news.timeAgo
+                )
+            }
         }
     }
+}
